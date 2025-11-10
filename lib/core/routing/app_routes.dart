@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:projeto_final_flutter/presentation/pages/home_page.dart';
 import 'package:projeto_final_flutter/presentation/pages/job_details_page.dart';
+import 'package:projeto_final_flutter/presentation/pages/login_page.dart';
+import 'package:projeto_final_flutter/presentation/pages/register_page.dart';
 import 'package:projeto_final_flutter/presentation/pages/splash_wrapper.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -12,7 +14,6 @@ final GoRouter appRouter = GoRouter(
       builder: (_, state) {
         final extras = state.extra as Map<String, dynamic>?;
         final city = extras?['city'] as String?;
-        //final jobs = extras[jobs] as List<Job>;
         return HomePage(city: city);
       },
     ),
@@ -22,5 +23,7 @@ final GoRouter appRouter = GoRouter(
         return JobDetailsPage(jobId: state.pathParameters['id']!);
       },
     ),
+    GoRoute(path: '/login', builder: (__, _) => const LoginPage()),
+    GoRoute(path: '/register', builder: (__,_)=> const RegisterPage())
   ],
 );
