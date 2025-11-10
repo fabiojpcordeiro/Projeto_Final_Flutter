@@ -18,7 +18,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final _passwordConfirmationController = TextEditingController();
   final _stateController = TextEditingController();
   final _cityController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -28,7 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_passwordController.text != _confirmPasswordController.text) {
+    if (_passwordController.text != _passwordConfirmationController.text) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('As senhas não correspondem!')));
@@ -39,15 +39,15 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     try {
-      await AuthService.register(
+        await AuthService.register(
         name: _nameController.text,
         email: _emailController.text,
         phone: _phoneController.text,
         password: _passwordController.text,
+        passwordConfirmation: _passwordConfirmationController.text,
         city: _selectedCityId!,
         state: _selectedStateId!,
       );
-
       final token = await AuthService.login(
         _emailController.text,
         _passwordController.text,
@@ -118,7 +118,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 12),
               TextFormField(
-                controller: _confirmPasswordController,
+                controller: _passwordConfirmationController,
                 decoration: const InputDecoration(
                   labelText: 'Confirme a senha',
                 ),
