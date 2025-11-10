@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:projeto_final_flutter/services/auth_service.dart';
 
 class BaseLayout extends StatelessWidget {
   final String title;
   final Widget child;
   final bool showDrawer;
-  final bool isAuthenticated;
 
   const BaseLayout({
     super.key,
     required this.title,
     required this.child,
     required this.showDrawer,
-    this.isAuthenticated = false,
   });
 
   @override
@@ -23,37 +23,57 @@ class BaseLayout extends StatelessWidget {
     );
   }
 
-  Drawer _buildDrawer(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(color: Colors.blue),
-            child: Text('Bem vindo'),
-          ),
+  Widget _buildDrawer(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: AuthService.isLogged,
+      builder: (context, logged, _) {
+        return Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              const DrawerHeader(
+                decoration: BoxDecoration(color: Colors.blue),
+                child: Text('Bem vindo'),
+              ),
 
-          if (isAuthenticated) ...[
-            ListTile(
-              title: Text('Minhas candidaturas'),
-              onTap: () => Navigator.pushNamed(context, 'teste'),
-            ),
-            ListTile(
-              title: Text('Sair'),
-              onTap: () => Navigator.pushNamed(context, 'teste'),
-            ),
-          ] else ...[
-            ListTile(
-              title: const Text('Login'),
-              onTap: () => Navigator.pushNamed(context, '/login'),
-            ),
-            ListTile(
-              title: const Text('Registrar-se'),
-              onTap: () => Navigator.pushNamed(context, '/register'),
-            ),
-          ],
-        ],
-      ),
+              if (logged) ...[
+                ListTile(
+                  title: const Text('Minhas candidaturas'),
+                  onTap: () => print('teste'),
+                ),
+                ListTile(
+                  title: const Text('Sair'),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    try {
+                      await AuthService.logout();
+                      if (context.mounted) context.go('/home');
+                    } catch (e) {
+                      if (context.mounted) {
+                        print(e);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Erro ao executar o logout'),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                ),
+              ] else ...[
+                ListTile(
+                  title: const Text('Login'),
+                  onTap: () => context.go('/login'),
+                ),
+                ListTile(
+                  title: const Text('Registrar-se'),
+                  onTap: () => context.go('/register'),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
     );
   }
 }
