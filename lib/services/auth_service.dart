@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:projeto_final_flutter/core/storage/local_storage.dart';
-import 'package:projeto_final_flutter/models.dart/candidate.dart';
+import 'package:projeto_final_flutter/models/candidate.dart';
 
 class AuthService {
   static String? token;
@@ -90,6 +90,26 @@ class AuthService {
       isLogged.value = false;
     } else {
       throw Exception('Falha no logout');
+    }
+  }
+
+  static Future<Candidate?> fetchProfile() async {
+    final token = await LocalStorage.getToken();
+    if (token == null) return null;
+
+    final url = Uri.parse('$baseUrl/candidate/me');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return Candidate.fromJson(data['data']);
+    } else {
+      throw 'Falha ao carregar perfil. Cód: ${{response.statusCode}}';
     }
   }
 }

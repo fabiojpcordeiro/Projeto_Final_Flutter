@@ -34,7 +34,7 @@ class _StateLoginPage extends State<LoginPage> {
       AuthService.isLogged.value = true;
       if (!mounted) return;
       final city = await LocalStorage.getCity();
-      context.go('/home', extra: {'city': city});
+      context.push('/home', extra: {'city': city});
     } catch (e) {
       setState(() => _error = e.toString());
     } finally {
@@ -81,7 +81,7 @@ class _StateLoginPage extends State<LoginPage> {
                     : const Text("Entrar"),
               ),
               TextButton(
-                onPressed: () => context.go('/register'),
+                onPressed: () => context.push('/register'),
                 child: Text('Ainda não tem conta? Cadastre-se'),
               ),
             ],

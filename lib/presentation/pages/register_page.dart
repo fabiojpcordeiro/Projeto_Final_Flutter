@@ -39,7 +39,7 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     try {
-        await AuthService.register(
+      await AuthService.register(
         name: _nameController.text,
         email: _emailController.text,
         phone: _phoneController.text,
@@ -59,7 +59,7 @@ class _RegisterPageState extends State<RegisterPage> {
           SnackBar(content: Text('Cadastro realizado com sucesso')),
         );
       }
-      context.go('/home');
+      context.push('/home');
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
@@ -205,7 +205,7 @@ class _RegisterPageState extends State<RegisterPage> {
               TextButton(
                 onPressed: () {
                   if (context.mounted) {
-                    context.go('/login');
+                    context.push('/login');
                   }
                 },
                 child: const Text('Já tem uma conta? Faça login'),

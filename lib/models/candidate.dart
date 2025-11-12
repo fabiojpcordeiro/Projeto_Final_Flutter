@@ -4,7 +4,9 @@ class Candidate {
   final String email;
   final String phone;
   final int stateId;
+  final String? stateName;
   final int cityId;
+  final String? cityName;
   final String? bio;
   final String? profilePhoto;
   final String? birthdate;
@@ -17,6 +19,8 @@ class Candidate {
     required this.phone,
     required this.stateId,
     required this.cityId,
+    this.stateName,
+    this.cityName,
     this.bio,
     this.profilePhoto,
     this.birthdate,
@@ -30,7 +34,9 @@ class Candidate {
       email: json['email'],
       phone: json['phone'],
       stateId: json['state_id'],
+      stateName: json['state_name'],
       cityId: json['city_id'],
+      cityName: json['city_name'],
       bio: json['bio'],
       profilePhoto: json['profile_photo'],
       birthdate: json['birthdate'],
@@ -52,5 +58,4 @@ class Candidate {
       'resume': resume,
     };
   }
-
 }
