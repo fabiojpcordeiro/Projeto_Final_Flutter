@@ -14,6 +14,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final _authService = AuthService();
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -39,7 +40,7 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     try {
-      await AuthService.register(
+      await _authService.register(
         name: _nameController.text,
         email: _emailController.text,
         phone: _phoneController.text,
@@ -48,7 +49,7 @@ class _RegisterPageState extends State<RegisterPage> {
         city: _selectedCityId!,
         state: _selectedStateId!,
       );
-      final token = await AuthService.login(
+      final token = await _authService.login(
         _emailController.text,
         _passwordController.text,
       );

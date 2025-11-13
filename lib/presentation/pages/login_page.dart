@@ -15,6 +15,7 @@ class _StateLoginPage extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _authService = AuthService();
   bool _isLoading = false;
   String? _error;
 
@@ -26,7 +27,7 @@ class _StateLoginPage extends State<LoginPage> {
     });
 
     try {
-      final token = await AuthService.login(
+      final token = await _authService.login(
         _emailController.text,
         _passwordController.text,
       );

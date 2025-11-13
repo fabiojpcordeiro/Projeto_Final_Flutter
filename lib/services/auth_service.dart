@@ -4,9 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:projeto_final_flutter/core/storage/local_storage.dart';
 import 'package:projeto_final_flutter/models/candidate.dart';
+import 'package:projeto_final_flutter/services/api_client.dart';
 
 class AuthService {
   static String? token;
+  final apiClient = ApiClient();
   static ValueNotifier<bool> isLogged = ValueNotifier(false);
   static String get baseUrl {
     if (kIsWeb) {
@@ -16,11 +18,11 @@ class AuthService {
     }
   }
 
-  static Future<String> login(String email, String password) async {
+  Future<String> login(String email, String password) async {
     final url = Uri.parse('$baseUrl/candidate/login');
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: await apiClient.getHeaders(),
       body: jsonEncode({'email': email, 'password': password}),
     );
 
@@ -38,7 +40,7 @@ class AuthService {
     }
   }
 
-  static Future<Candidate?> register({
+  Future<Candidate?> register({
     required String name,
     required String email,
     required String phone,
@@ -50,7 +52,7 @@ class AuthService {
     final url = Uri.parse('$baseUrl/candidate/register');
     final response = await http.post(
       url,
-      headers: {'Content-type': 'application/json'},
+      headers: await apiClient.getHeaders(),
       body: jsonEncode({
         'name': name,
         'email': email,
@@ -72,17 +74,14 @@ class AuthService {
     }
   }
 
-  static Future<void> logout() async {
+  Future<void> logout() async {
     final token = await LocalStorage.getToken();
     if (token == null || token.isEmpty) return;
 
     final url = Uri.parse('$baseUrl/candidate/logout');
     final response = await http.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: await apiClient.getHeaders(),
     );
 
     if (response.statusCode == 200) {
@@ -93,18 +92,12 @@ class AuthService {
     }
   }
 
-  static Future<Candidate?> fetchProfile() async {
+  Future<Candidate?> fetchProfile() async {
     final token = await LocalStorage.getToken();
     if (token == null) return null;
 
     final url = Uri.parse('$baseUrl/candidate/me');
-    final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
+    final response = await http.get(url, headers: await apiClient.getHeaders());
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return Candidate.fromJson(data['data']);

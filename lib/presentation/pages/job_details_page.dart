@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_final_flutter/core/layouts/base_layout.dart';
+import 'package:projeto_final_flutter/core/widgets/job_application_confirmation.dart';
 import 'package:projeto_final_flutter/services/job_service.dart';
 
 class JobDetailsPage extends StatefulWidget {
   final String jobId;
   const JobDetailsPage({super.key, required this.jobId});
+
   @override
   State<JobDetailsPage> createState() => _JobDetailsPageState();
 }
@@ -13,6 +15,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
   final JobService _jobService = JobService();
   Map<String, dynamic>? _job;
   bool _isLoading = true;
+  bool _hasApplied = false;
   String? _error;
 
   @override
@@ -47,23 +50,149 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
         body: Center(child: Text(_error!)),
       );
     }
+
+    final job = _job;
+    final company = job!['company'];
+    final dates = List<String>.from(job['dates'] ?? []);
+    final screen = MediaQuery.of(context).size;
+
     return BaseLayout(
       title: 'Detalhes da vaga',
       showDrawer: true,
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+      child: SizedBox.expand(
+        child: Stack(
           children: [
-            Text(
-              _job!['title'],
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: screen.height * 0.25,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      image: DecorationImage(
+                        image: NetworkImage(company['logo']),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    company['name'],
+                    textAlign: TextAlign.left,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    job['city'],
+                    style: const TextStyle(fontSize: 15, color: Colors.grey),
+                  ),
+                  Wrap(
+                    spacing: 5,
+                    children: [
+                      Chip(
+                        label: Text(
+                          'Inscrição disponível até: ${job['open_until']}',
+                        ),
+                        backgroundColor: Colors.blue.shade50,
+                      ),
+                    ],
+                  ),
+                  Divider(height: 10),
+                  Padding(
+                    padding: EdgeInsetsGeometry.all(4),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      width: screen.width,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.blueAccent,
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            job['title'],
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 6),
+                          Text(
+                            job['description'],
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Chip(
+                            label: Text('Remuneração/dia: ${job['salary']}'),
+                            backgroundColor: Colors.blue.shade50,
+                          ),
+                          Text('Data(s) do trabalho:'),
+                          Wrap(
+                            spacing: 5,
+                            children: dates.map((date) {
+                              return Chip(
+                                label: Text(
+                                  date,
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                backgroundColor: Colors.blue.shade50,
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 100),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 6),
-            Text(
-              _job!['description'],
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            ),
+            if (!_hasApplied)
+              Positioned(
+                bottom: 5,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: FloatingActionButton.extended(
+                    label: Text(
+                      'Quero me candidatar a essa vaga',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    icon: Icon(Icons.send),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                        builder: (context) {
+                          return JobApplicationConfirmation(
+                            jobId: widget.jobId,
+                            onApplied: () {
+                              setState(() => _hasApplied = true);
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
           ],
         ),
       ),

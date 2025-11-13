@@ -26,7 +26,6 @@ class JobService {
           .map((dateObject) => dateObject['work_date'] as String)
           .toList();
       job['dates'] = formattedDates;
-      print(formattedDates);
     }
     return jobs;
   }
@@ -34,17 +33,16 @@ class JobService {
   Future<Map<String, dynamic>> getJobById(String id) async {
     final url = Uri.parse('$baseUrl/job-offers/$id');
     final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (data is Map && data.containsKey('data')) {
-        return data['data'];
-      }
-      if (data is Map) {
-        return Map<String, dynamic>.from(data);
-      }
-      throw Exception('Formato inesperado');
-    } else {
+    if (response.statusCode != 200) {
       throw Exception('Erro: ${response.statusCode}');
     }
+    final data = jsonDecode(response.body);
+    final job = data['data'] as Map<String, dynamic>;
+    final List<dynamic> datesData = job['dates'] ?? [];
+    final List<String> formattedDates = datesData
+        .map((dateObj) => dateObj['work_date'] as String)
+        .toList();
+    job['dates'] = formattedDates;
+    return job;
   }
 }

@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size.height;
     return BaseLayout(
       title: 'Confira algumas vagas.',
       showDrawer: true,
@@ -98,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                 ? Center(child: const Text('Nenhuma vaga encontrada.'))
                 : Center(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CarouselSlider.builder(
                           carouselController: _controller,
@@ -106,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                           itemBuilder: (context, index, realIndex) =>
                               JobCard(job: _jobs[index]),
                           options: CarouselOptions(
-                            height: 410,
+                            height: screenSize * 0.6,
                             enableInfiniteScroll: true,
                             enlargeCenterPage: true,
                             autoPlay: _carouselAutoPlay,

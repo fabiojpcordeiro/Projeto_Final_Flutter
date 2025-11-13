@@ -37,6 +37,7 @@ class BaseLayout extends StatelessWidget {
   }
 
   Widget _buildDrawer(BuildContext context) {
+    final authService = AuthService();
     return ValueListenableBuilder(
       valueListenable: AuthService.isLogged,
       builder: (context, logged, _) {
@@ -63,7 +64,7 @@ class BaseLayout extends StatelessWidget {
                   onTap: () async {
                     Navigator.pop(context);
                     try {
-                      await AuthService.logout();
+                      await authService.logout();
                       if (context.mounted) context.push('/home');
                     } catch (e) {
                       if (context.mounted) {

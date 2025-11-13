@@ -15,19 +15,24 @@ class JobCard extends StatelessWidget {
         job['salary'] != null && job['salary'].toString().isNotEmpty
         ? 'R\$ ${job['salary']}'
         : 'A combinar';
-    final String logoUrl =
-        'http://localhost:8000/api/logo/${job['company']?['logo']}';
+    final String logoUrl = job['company']?['logo'];
+
     return Card(
       elevation: 6,
-      margin: const EdgeInsets.all(10),
+      margin: const EdgeInsets.all(7),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadiusGeometry.circular(20),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.all(4),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Image.network(logoUrl, height: 100, width: 100),
+            CircleAvatar(radius: 40, backgroundImage: NetworkImage(logoUrl)),
+            Text(
+              company,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
             Text(
               title,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -45,7 +50,6 @@ class JobCard extends StatelessWidget {
               'Datas do trabalho:',
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
-            const SizedBox(height: 8),
             Wrap(
               spacing: 5,
               children: dates.map((date) {

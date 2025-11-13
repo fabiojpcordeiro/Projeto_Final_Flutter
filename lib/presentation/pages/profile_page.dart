@@ -11,6 +11,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final _authService = AuthService();
   Candidate? candidate;
   bool isLoading = true;
   @override
@@ -21,7 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<Candidate?> _loadProfile() async {
     try {
-      final data = await AuthService.fetchProfile();
+      final data = await _authService.fetchProfile();
       setState(() {
         candidate = data;
         isLoading = false;
