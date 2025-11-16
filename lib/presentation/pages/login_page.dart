@@ -35,7 +35,7 @@ class _StateLoginPage extends State<LoginPage> {
       AuthService.isLogged.value = true;
       if (!mounted) return;
       final city = await LocalStorage.getCity();
-      context.push('/home', extra: {'city': city});
+      context.go('/home', extra: {'city': city});
     } catch (e) {
       setState(() => _error = e.toString());
     } finally {
@@ -50,42 +50,72 @@ class _StateLoginPage extends State<LoginPage> {
     return BaseLayout(
       title: 'Login',
       showDrawer: true,
-      child: Padding(
-        padding: const EdgeInsets.all(7),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (_error != null)
-                Text(_error!, style: const TextStyle(color: Colors.red)),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(label: Text('Email')),
-                validator: (value) =>
-                    value!.isEmpty ? 'Digite seu email' : null,
+      child: Align(
+        alignment: Alignment(0, -0.5),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 400, maxHeight: 500),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Form(
+              key: _formKey,
+              child: Card(
+                color: Colors.blue.shade50,
+                child: Column(
+                  spacing: 10,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (_error != null)
+                      Text(_error!, style: const TextStyle(color: Colors.red)),
+                    Text(
+                      'Realize seu login',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) =>
+                          value!.isEmpty ? 'Digite seu email' : null,
+                    ),
+
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'Senha',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) =>
+                          value!.isEmpty ? 'Digite sua senha' : null,
+                    ),
+
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade400,
+                      ),
+                      onPressed: _isLoading ? null : _login,
+                      child: _isLoading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                              "Entrar",
+                              style: TextStyle(fontSize: 18),
+                            ),
+                    ),
+
+                    TextButton(
+                      onPressed: () => context.go('/register'),
+                      child: Text('Ainda não tem conta? Cadastre-se'),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(label: Text('Senha')),
-                validator: (value) =>
-                    value!.isEmpty ? 'Digite sua senha' : null,
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _login,
-                child: _isLoading
-                    ? CircularProgressIndicator(color: Colors.white)
-                    : const Text("Entrar"),
-              ),
-              TextButton(
-                onPressed: () => context.push('/register'),
-                child: Text('Ainda não tem conta? Cadastre-se'),
-              ),
-            ],
+            ),
           ),
         ),
       ),

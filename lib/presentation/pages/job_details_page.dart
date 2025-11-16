@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:projeto_final_flutter/core/layouts/base_layout.dart';
+import 'package:projeto_final_flutter/core/storage/local_storage.dart';
 import 'package:projeto_final_flutter/core/widgets/job_application_confirmation.dart';
+import 'package:projeto_final_flutter/services/auth_service.dart';
 import 'package:projeto_final_flutter/services/job_service.dart';
 
 class JobDetailsPage extends StatefulWidget {
@@ -171,24 +174,92 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                       ),
                     ),
                     icon: Icon(Icons.send),
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20),
+                    onPressed: () async {
+                      if (await LocalStorage.getToken() == null) {
+                        showModalBottomSheet(
+                          context: context,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
+                            ),
                           ),
-                        ),
-                        builder: (context) {
-                          return JobApplicationConfirmation(
-                            jobId: widget.jobId,
-                            onApplied: () {
-                              setState(() => _hasApplied = true);
-                              Navigator.pop(context);
-                            },
-                          );
-                        },
-                      );
+                          builder: ((context) {
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(height: 20),
+                                  Text(
+                                    'Voce precisa de uma conta para se candidatar a vaga.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  SizedBox(height: 15),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () =>
+                                            context.push('/register'),
+                                        style: ElevatedButton.styleFrom(
+                                          fixedSize: Size(120, 20),
+                                          backgroundColor: Colors.blueAccent,
+                                        ),
+                                        child: Text(
+                                          'Cadastrar',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () => context.push('/login'),
+                                        style: ElevatedButton.styleFrom(
+                                          fixedSize: Size(120, 20),
+                                          backgroundColor: Colors.blueAccent,
+                                        ),
+                                        child: Text(
+                                          'Entrar',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                        );
+                      } else {
+                        showModalBottomSheet(
+                          context: context,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
+                            ),
+                          ),
+                          builder: (context) {
+                            return JobApplicationConfirmation(
+                              jobId: widget.jobId,
+                              onApplied: () {
+                                setState(() => _hasApplied = true);
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                        );
+                      }
                     },
                   ),
                 ),

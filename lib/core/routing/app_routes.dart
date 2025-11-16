@@ -1,4 +1,6 @@
 import 'package:go_router/go_router.dart';
+import 'package:projeto_final_flutter/presentation/pages/applications_page.dart';
+import 'package:projeto_final_flutter/presentation/pages/edit_profile_page.dart';
 import 'package:projeto_final_flutter/presentation/pages/home_page.dart';
 import 'package:projeto_final_flutter/presentation/pages/job_details_page.dart';
 import 'package:projeto_final_flutter/presentation/pages/login_page.dart';
@@ -25,7 +27,15 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(path: '/login', builder: (__, _) => const LoginPage()),
-    GoRoute(path: '/register', builder: (__,_)=> const RegisterPage()),
-    GoRoute(path: '/profile', builder: (__,_)=>const ProfilePage())
+    GoRoute(path: '/register', builder: (__, _) => const RegisterPage()),
+    GoRoute(path: '/profile', builder: (__, _) => const ProfilePage()),
+    GoRoute(
+      path: '/edit-profile',
+      builder: (context, state) => const EditProfilePage(),
+    ),
+    GoRoute(
+      path: '/applications',
+      builder: (__, _) => const ApplicationsPage(),
+    ),
   ],
 );

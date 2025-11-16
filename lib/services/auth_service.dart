@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:projeto_final_flutter/core/storage/local_storage.dart';
@@ -92,17 +91,20 @@ class AuthService {
     }
   }
 
-  Future<Candidate?> fetchProfile() async {
-    final token = await LocalStorage.getToken();
-    if (token == null) return null;
-
-    final url = Uri.parse('$baseUrl/candidate/me');
-    final response = await http.get(url, headers: await apiClient.getHeaders());
+  Future<bool> deleteAccount(String password) async {
+    final candidate = await LocalStorage.getCandidate();
+    if (candidate == null) throw 'Usuário não carregado.';
+    final url = Uri.parse('$baseUrl/candidate/${candidate['id']}');
+    final response = await http.delete(
+      url,
+      headers: await apiClient.getHeaders(),
+      body: jsonEncode({'password': password}),
+    );
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return Candidate.fromJson(data['data']);
+      return true;
     } else {
-      throw 'Falha ao carregar perfil. Cód: ${{response.statusCode}}';
+      final data = jsonDecode(response.body);
+      throw Exception(data['message'] ?? 'Erro ao excluir conta');
     }
   }
 }

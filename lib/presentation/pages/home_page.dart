@@ -51,24 +51,21 @@ class _HomePageState extends State<HomePage> {
       title: 'Confira algumas vagas.',
       showDrawer: true,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Card(
-            margin: const EdgeInsets.all(8),
+            color: Colors.blue.shade50,
+            margin: const EdgeInsets.all(6),
             child: Padding(
               padding: const EdgeInsets.all(4),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    _city == null || _city!.isEmpty
-                        ? 'Digite sua cidade para procurar vagas próximas a voce!'
-                        : 'Mostrando vagas para $_city',
-                  ),
                   const SizedBox(height: 4),
                   TextField(
                     decoration: const InputDecoration(
-                      labelText: 'Sua cidade',
+                      labelText: 'Digite sua cidade ou título da vaga',
                       border: OutlineInputBorder(),
                     ),
                     onSubmitted: (value) async {
@@ -86,17 +83,26 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Text(
-            widget.city == null || widget.city!.isEmpty
+            _city == null || _city!.isEmpty
                 ? 'Exibindo todas as vagas'
-                : 'Exibindo vagas para $_city',
+                : 'Exibindo vagas para: $_city',
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
           Expanded(
             child: _isLoading
                 ? Center(child: CircularProgressIndicator())
                 : _jobs.isEmpty
-                ? Center(child: const Text('Nenhuma vaga encontrada.'))
+                ? Center(
+                    child: const Text(
+                      'Nenhuma vaga encontrada.',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  )
                 : Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -107,8 +113,8 @@ class _HomePageState extends State<HomePage> {
                           itemBuilder: (context, index, realIndex) =>
                               JobCard(job: _jobs[index]),
                           options: CarouselOptions(
-                            height: screenSize * 0.6,
-                            enableInfiniteScroll: true,
+                            height: screenSize * 0.55,
+                            enableInfiniteScroll: false,
                             enlargeCenterPage: true,
                             autoPlay: _carouselAutoPlay,
                             pauseAutoPlayOnTouch: true,
@@ -118,7 +124,7 @@ class _HomePageState extends State<HomePage> {
                               milliseconds: 450,
                             ),
                             onPageChanged: (index, reason) {
-                              setState(() {
+                              setState(() { 
                                 _current = index;
                                 if (reason ==
                                     CarouselPageChangedReason.manual) {
