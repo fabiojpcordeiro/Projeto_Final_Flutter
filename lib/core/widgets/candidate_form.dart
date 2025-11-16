@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:intl/intl.dart';
 import 'package:projeto_final_flutter/services/location_service.dart';
 
 enum CandidateFormMode { create, edit }
@@ -189,14 +190,15 @@ class CandidateForm extends StatelessWidget {
                       firstDate: DateTime(1900),
                       lastDate: DateTime.now(),
                     );
-                    print(picked);
                     if (picked != null) {
-                      birthdateController!.text =
-                          "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+                      birthdateController!.text = DateFormat(
+                        'dd/MM/yyyy',
+                      ).format(picked);
                     }
                   },
                 ),
               ],
+              const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: isLoading ? null : onSubmit,
                 child: isLoading

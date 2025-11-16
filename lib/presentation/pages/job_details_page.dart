@@ -56,7 +56,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
 
     final job = _job;
     final company = job!['company'];
-    final dates = List<String>.from(job['dates'] ?? []);
+    final dates = List<String>.from(job['dates'] ?? ['Datas não informadas.']);
     final screen = MediaQuery.of(context).size;
 
     return BaseLayout(
@@ -77,7 +77,12 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       image: DecorationImage(
-                        image: NetworkImage(company['logo']),
+                        image:
+                            company['logo'] != null &&
+                                company['logo'].isNotEmpty
+                            ? NetworkImage(company['logo'])
+                            : const AssetImage('images/default_logo.png')
+                                  as ImageProvider,
                         fit: BoxFit.cover,
                       ),
                     ),

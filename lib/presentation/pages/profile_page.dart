@@ -131,7 +131,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
-                      spacing: 15,
+                      spacing: 10,
                       children: [
                         const SizedBox(height: 30),
                         Center(
@@ -182,7 +182,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: const Text('Alterar senha'),
                         ),
 
-                        Divider(height: 20),
+                        Divider(height: 15),
 
                         TextButton(
                           onPressed: _selectResume,
@@ -190,7 +190,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         if (_selectedResume != null) ...[
                           Text('Arquivo selecionado: $_selectedResumeName'),
-                          SizedBox(height: 10),
+                          SizedBox(height: 1),
                           ElevatedButton(
                             onPressed: _isLoading ? null : _uploadResume,
                             child: _isLoading

@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:intl/intl.dart';
+
 class Candidate {
   final int id;
   final String name;
@@ -31,6 +33,14 @@ class Candidate {
   });
 
   factory Candidate.fromJson(Map<String, dynamic> json) {
+    String? formattedBirthdate;
+
+    if (json['birthdate'] != null) {
+      final parsed = DateTime.tryParse(json['birthdate']);
+      if (parsed != null) {
+        formattedBirthdate = DateFormat('dd/MM/yyyy').format(parsed);
+      }
+    }
     return Candidate(
       id: json['id'],
       name: json['name'],
@@ -42,7 +52,7 @@ class Candidate {
       cityName: json['city_name'],
       bio: json['bio'],
       profilePhotoUrl: json['profile_photo'],
-      birthdate: json['birthdate'],
+      birthdate: formattedBirthdate,
       resume: json['resume'],
     );
   }
