@@ -1,16 +1,15 @@
 # projeto_final_flutter
 
-A new Flutter project.
+Projeto final da disciplina de Programação para Dispositivos Móveis
+Para baixar o projeto rode o comando
+git clone https://github.com/fabiojpcordeiro/Projeto_Final_Flutter.git
+Após o termino do download vá a até a pagina raiz do projeto
+cd Projeto_Final_Flutter
 
-## Getting Started
+e em seguida instale as dependências
+flutter pub get
 
-This project is a starting point for a Flutter application.
+O projeto usa várias bibliotecas então o passo acima é indispensável
+Após isso é só rodar o projeto via sua IDE ou flutter run selecionando o Chrome como plataforma
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Esse projeto depende do server criado no projeto final laravel para consumir seus conteúdos
