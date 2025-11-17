@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:projeto_final_flutter/models/candidate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorage {
@@ -25,4 +28,16 @@ class LocalStorage {
     final preference = await SharedPreferences.getInstance();
     await preference.remove('authToken');
   }
+
+  static Future saveCandidate(Candidate candidate) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('candidate', jsonEncode(candidate));
+  }
+
+  static Future<Map<String, dynamic>?> getCandidate() async {
+  final prefs = await SharedPreferences.getInstance();
+  final jsonString = prefs.getString('candidate');
+  if (jsonString == null) return null;
+  return jsonDecode(jsonString);
+}
 }

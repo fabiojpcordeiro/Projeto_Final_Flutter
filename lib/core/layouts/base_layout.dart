@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:projeto_final_flutter/core/widgets/menu_tile.dart';
 import 'package:projeto_final_flutter/services/auth_service.dart';
 
 class BaseLayout extends StatelessWidget {
@@ -27,12 +28,35 @@ class BaseLayout extends StatelessWidget {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        toolbarHeight: 85,
+        centerTitle: true,
+        title: Container(
+          height: 45,
+          width: 180,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Image.asset("assets/images/logo.png", fit: BoxFit.cover),
+        ),
         automaticallyImplyLeading: true,
         leading: leadingWidget,
       ),
       drawer: showDrawer ? _buildDrawer(context) : null,
-      body: Padding(padding: const EdgeInsets.all(16), child: child),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(6),
+              child: Text(title, style: TextStyle(fontSize: 24)),
+            ),
+            Expanded(child: child),
+          ],
+        ),
+      ),
     );
   }
 
@@ -45,27 +69,62 @@ class BaseLayout extends StatelessWidget {
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              const DrawerHeader(
+              DrawerHeader(
                 decoration: BoxDecoration(color: Colors.blue),
-                child: Text('Bem vindo'),
+                child: Container(
+                  height: 45,
+                  width: 180,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Image.asset(
+                    "assets/images/logo.png",
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+
+              ListTile(
+                title: Text(
+                  'Seja bem vindo!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Divider(height: 15, thickness: 3),
+              MenuTile(
+                title: 'HOME',
+                onTap: () => context.push('/home'),
+                icon: Icons.home,
               ),
 
               if (logged) ...[
-                ListTile(
-                  title: const Text('Minhas candidaturas'),
-                  onTap: () => print('teste'),
+                SizedBox(height: 8),
+                MenuTile(
+                  title: 'Minhas candidaturas',
+                  onTap: () => context.push('/applications'),
+                  icon: Icons.file_copy_outlined,
                 ),
-                ListTile(
-                  title: const Text('Meu Perfil'),
+                MenuTile(
+                  title: 'Meu Perfil',
                   onTap: () => context.push('/profile'),
+                  icon: Icons.person_2_rounded,
                 ),
-                ListTile(
-                  title: const Text('Sair'),
+                MenuTile(
+                  title: 'Sair',
+                  icon: Icons.power_settings_new,
                   onTap: () async {
                     Navigator.pop(context);
                     try {
                       await authService.logout();
-                      if (context.mounted) context.push('/home');
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Logout efetuado com sucesso.'),
+                        ),
+                      );
+                      context.go('/home');
                     } catch (e) {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -78,13 +137,16 @@ class BaseLayout extends StatelessWidget {
                   },
                 ),
               ] else ...[
-                ListTile(
-                  title: const Text('Login'),
+                SizedBox(height: 8),
+                MenuTile(
+                  title: 'Login',
                   onTap: () => context.push('/login'),
+                  icon: Icons.person_2_outlined,
                 ),
-                ListTile(
-                  title: const Text('Registrar-se'),
+                MenuTile(
+                  title: 'Registrar-se',
                   onTap: () => context.push('/register'),
+                  icon: Icons.playlist_add_check_rounded,
                 ),
               ],
             ],

@@ -16,8 +16,10 @@ class JobCard extends StatelessWidget {
         ? 'R\$ ${job['salary']}'
         : 'A combinar';
     final String logoUrl = job['company']?['logo'];
+    print(logoUrl);
 
     return Card(
+      color: Colors.grey.shade200,
       elevation: 6,
       margin: const EdgeInsets.all(7),
       shape: RoundedRectangleBorder(

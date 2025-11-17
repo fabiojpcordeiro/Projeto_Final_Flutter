@@ -1,70 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:projeto_final_flutter/core/layouts/base_layout.dart';
-import 'package:projeto_final_flutter/core/storage/local_storage.dart';
 import 'package:projeto_final_flutter/core/widgets/candidate_form.dart';
-import 'package:projeto_final_flutter/services/auth_service.dart';
+import 'package:projeto_final_flutter/services/profile_service.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
-
+class EditProfilePage extends StatefulWidget {
+  const EditProfilePage({super.key});
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<EditProfilePage> createState() => _EditProfilePageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
-  final _authService = AuthService();
+class _EditProfilePageState extends State<EditProfilePage> {
+  final _profileService = ProfileService();
+
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _passwordConfirmationController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _stateController = TextEditingController();
   final _cityController = TextEditingController();
-  final _phoneController = TextEditingController();
-  int? _selectedCityId;
-  int? _selectedStateId;
-  bool _isLoading = false;
+  final _bioController = TextEditingController();
+  final _birthdateController = TextEditingController();
 
-  Future<void> _register() async {
-    if (!_formKey.currentState!.validate()) return;
-    if (_passwordController.text != _passwordConfirmationController.text) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('As senhas não correspondem!')));
-      return;
+  late int _candidateId;
+  int? _selectedStateId;
+  int? _selectedCityId;
+  bool _isLoading = false;
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final candidate = await _profileService.fetchProfile();
+    if (candidate != null) {
+      setState(() {
+        _candidateId = candidate.id;
+        _nameController.text = candidate.name;
+        _emailController.text = candidate.email;
+        _phoneController.text = candidate.phone;
+        _bioController.text = candidate.bio ?? '';
+        _birthdateController.text = candidate.birthdate ?? '';
+        _stateController.text = candidate.stateName ?? '';
+        _cityController.text = candidate.cityName ?? '';
+        _selectedStateId = candidate.stateId;
+        _selectedCityId = candidate.cityId;
+      });
     }
+  }
+
+  Future<void> _updateUserData() async {
+    if (!_formKey.currentState!.validate()) return;
     setState(() {
       _isLoading = true;
     });
-
     try {
-      await _authService.register(
+      await _profileService.updateProfile(
+        candidateId: _candidateId,
         name: _nameController.text,
         email: _emailController.text,
         phone: _phoneController.text,
-        password: _passwordController.text,
-        passwordConfirmation: _passwordConfirmationController.text,
-        city: _selectedCityId!,
+        bio: _bioController.text,
+        birthdate: _birthdateController.text,
         state: _selectedStateId!,
+        city: _selectedCityId!,
       );
-      final token = await _authService.login(
-        _emailController.text,
-        _passwordController.text,
-      );
-      await LocalStorage.saveToken(token);
-
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Cadastro realizado com sucesso')),
+          const SnackBar(content: Text('Perfil atualizado com sucesso')),
         );
       }
-      context.push('/home');
+      context.go('/profile');
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Erro ao registrar: $e')));
+        ).showSnackBar(SnackBar(content: Text('Erro ao atualizar: $e')));
       }
     } finally {
       setState(() {
@@ -76,7 +88,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
-      title: 'Registrar',
+      title: 'Editar perfil',
       showDrawer: true,
       child: Padding(
         padding: const EdgeInsets.all(8),
@@ -84,19 +96,19 @@ class _RegisterPageState extends State<RegisterPage> {
           child: ConstrainedBox(
             constraints: BoxConstraints(maxHeight: 600, maxWidth: 400),
             child: CandidateForm(
-              mode: CandidateFormMode.create,
+              mode: CandidateFormMode.edit,
               formKey: _formKey,
               nameController: _nameController,
               emailController: _emailController,
-              passwordController: _passwordController,
-              passwordConfirmationController: _passwordConfirmationController,
               phoneController: _phoneController,
               stateController: _stateController,
               cityController: _cityController,
+              bioController: _bioController,
+              birthdateController: _birthdateController,
               selectedStateId: _selectedStateId,
               selectedCityId: _selectedCityId,
               isLoading: _isLoading,
-              onSubmit: _register,
+              onSubmit: _updateUserData,
               onStateSelected: (id, name) {
                 setState(() {
                   _selectedStateId = id;

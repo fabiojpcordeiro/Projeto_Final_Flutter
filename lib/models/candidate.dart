@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 class Candidate {
   final int id;
   final String name;
@@ -8,9 +10,10 @@ class Candidate {
   final int cityId;
   final String? cityName;
   final String? bio;
-  final String? profilePhoto;
+  final String? profilePhotoUrl;
   final String? birthdate;
   final String? resume;
+  Uint8List? photo;
 
   Candidate({
     required this.id,
@@ -22,7 +25,7 @@ class Candidate {
     this.stateName,
     this.cityName,
     this.bio,
-    this.profilePhoto,
+    this.profilePhotoUrl,
     this.birthdate,
     this.resume,
   });
@@ -38,7 +41,7 @@ class Candidate {
       cityId: json['city_id'],
       cityName: json['city_name'],
       bio: json['bio'],
-      profilePhoto: json['profile_photo'],
+      profilePhotoUrl: json['profile_photo'],
       birthdate: json['birthdate'],
       resume: json['resume'],
     );
@@ -53,7 +56,7 @@ class Candidate {
       'state_id': stateId,
       'city_id': cityId,
       'bio': bio,
-      'profile_photo': profilePhoto,
+      'profile_photo': profilePhotoUrl,
       'birthdate': birthdate,
       'resume': resume,
     };
