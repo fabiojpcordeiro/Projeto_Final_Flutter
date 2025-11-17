@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:projeto_final_flutter/presentation/pages/home_page.dart';
 import 'package:projeto_final_flutter/presentation/pages/job_details_page.dart';
 import 'package:projeto_final_flutter/presentation/pages/login_page.dart';
+import 'package:projeto_final_flutter/presentation/pages/profile_page.dart';
 import 'package:projeto_final_flutter/presentation/pages/register_page.dart';
 import 'package:projeto_final_flutter/presentation/pages/splash_wrapper.dart';
 
@@ -24,6 +25,7 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(path: '/login', builder: (__, _) => const LoginPage()),
-    GoRoute(path: '/register', builder: (__,_)=> const RegisterPage())
+    GoRoute(path: '/register', builder: (__,_)=> const RegisterPage()),
+    GoRoute(path: '/profile', builder: (__,_)=>const ProfilePage())
   ],
 );

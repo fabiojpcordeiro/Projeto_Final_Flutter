@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:projeto_final_flutter/core/layouts/base_layout.dart';
 import 'package:projeto_final_flutter/core/storage/local_storage.dart';
-import 'package:projeto_final_flutter/presentation/pages/job_details_page.dart';
+import 'package:projeto_final_flutter/core/widgets/job_card.dart';
 import 'package:projeto_final_flutter/services/job_service.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class HomePage extends StatefulWidget {
   final String? city;
@@ -14,10 +14,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final JobService _jobService = JobService();
+  final CarouselSliderController _controller = CarouselSliderController();
   List<dynamic> _jobs = [];
   bool _isLoading = true;
   String? _error;
   String? _city;
+  int _current = 0;
+  bool _carouselAutoPlay = true;
 
   @override
   void initState() {
@@ -43,6 +46,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size.height;
     return BaseLayout(
       title: 'Confira algumas vagas.',
       showDrawer: true,
@@ -89,24 +93,66 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 20),
           Expanded(
-            child: ListView.builder(
-              itemCount: _jobs.length,
-              itemBuilder: (context, index) {
-                final job = _jobs[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: ListTile(
-                    title: Text(job['title']),
-                    subtitle: Text(job['city']),
-                    trailing: const Icon(Icons.arrow_forward),
-                    onTap: () {
-                      final id = job['id'];
-                      context.push('/job-details/$id');
-                    },
+            child: _isLoading
+                ? Center(child: CircularProgressIndicator())
+                : _jobs.isEmpty
+                ? Center(child: const Text('Nenhuma vaga encontrada.'))
+                : Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CarouselSlider.builder(
+                          carouselController: _controller,
+                          itemCount: _jobs.length,
+                          itemBuilder: (context, index, realIndex) =>
+                              JobCard(job: _jobs[index]),
+                          options: CarouselOptions(
+                            height: screenSize * 0.6,
+                            enableInfiniteScroll: true,
+                            enlargeCenterPage: true,
+                            autoPlay: _carouselAutoPlay,
+                            pauseAutoPlayOnTouch: true,
+                            autoPlayCurve: Curves.easeInOut,
+                            autoPlayInterval: Duration(seconds: 4),
+                            autoPlayAnimationDuration: Duration(
+                              milliseconds: 450,
+                            ),
+                            onPageChanged: (index, reason) {
+                              setState(() {
+                                _current = index;
+                                if (reason ==
+                                    CarouselPageChangedReason.manual) {
+                                  _carouselAutoPlay = false;
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: _jobs.asMap().entries.map((entry) {
+                            return GestureDetector(
+                              onTap: () => _controller.animateToPage(entry.key),
+                              child: Container(
+                                width: 12,
+                                height: 12,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _current == entry.key
+                                      ? Colors.blue
+                                      : Colors.grey,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),

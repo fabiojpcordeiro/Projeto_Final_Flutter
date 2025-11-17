@@ -14,11 +14,12 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final _authService = AuthService();
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final _passwordConfirmationController = TextEditingController();
   final _stateController = TextEditingController();
   final _cityController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -28,7 +29,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_passwordController.text != _confirmPasswordController.text) {
+    if (_passwordController.text != _passwordConfirmationController.text) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('As senhas não correspondem!')));
@@ -39,16 +40,16 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     try {
-      await AuthService.register(
+      await _authService.register(
         name: _nameController.text,
         email: _emailController.text,
         phone: _phoneController.text,
         password: _passwordController.text,
+        passwordConfirmation: _passwordConfirmationController.text,
         city: _selectedCityId!,
         state: _selectedStateId!,
       );
-
-      final token = await AuthService.login(
+      final token = await _authService.login(
         _emailController.text,
         _passwordController.text,
       );
@@ -59,7 +60,7 @@ class _RegisterPageState extends State<RegisterPage> {
           SnackBar(content: Text('Cadastro realizado com sucesso')),
         );
       }
-      context.go('/home');
+      context.push('/home');
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
@@ -118,7 +119,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 12),
               TextFormField(
-                controller: _confirmPasswordController,
+                controller: _passwordConfirmationController,
                 decoration: const InputDecoration(
                   labelText: 'Confirme a senha',
                 ),
@@ -205,7 +206,7 @@ class _RegisterPageState extends State<RegisterPage> {
               TextButton(
                 onPressed: () {
                   if (context.mounted) {
-                    context.go('/login');
+                    context.push('/login');
                   }
                 },
                 child: const Text('Já tem uma conta? Faça login'),

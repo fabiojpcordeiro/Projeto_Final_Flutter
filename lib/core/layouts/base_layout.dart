@@ -16,14 +16,28 @@ class BaseLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool canPop = context.canPop();
+    Widget? leadingWidget;
+
+    if (canPop) {
+      leadingWidget = IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => context.pop(),
+      );
+    }
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        title: Text(title),
+        automaticallyImplyLeading: true,
+        leading: leadingWidget,
+      ),
       drawer: showDrawer ? _buildDrawer(context) : null,
       body: Padding(padding: const EdgeInsets.all(16), child: child),
     );
   }
 
   Widget _buildDrawer(BuildContext context) {
+    final authService = AuthService();
     return ValueListenableBuilder(
       valueListenable: AuthService.isLogged,
       builder: (context, logged, _) {
@@ -42,15 +56,18 @@ class BaseLayout extends StatelessWidget {
                   onTap: () => print('teste'),
                 ),
                 ListTile(
+                  title: const Text('Meu Perfil'),
+                  onTap: () => context.push('/profile'),
+                ),
+                ListTile(
                   title: const Text('Sair'),
                   onTap: () async {
                     Navigator.pop(context);
                     try {
-                      await AuthService.logout();
-                      if (context.mounted) context.go('/home');
+                      await authService.logout();
+                      if (context.mounted) context.push('/home');
                     } catch (e) {
                       if (context.mounted) {
-                        print(e);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Erro ao executar o logout'),
@@ -63,11 +80,11 @@ class BaseLayout extends StatelessWidget {
               ] else ...[
                 ListTile(
                   title: const Text('Login'),
-                  onTap: () => context.go('/login'),
+                  onTap: () => context.push('/login'),
                 ),
                 ListTile(
                   title: const Text('Registrar-se'),
-                  onTap: () => context.go('/register'),
+                  onTap: () => context.push('/register'),
                 ),
               ],
             ],

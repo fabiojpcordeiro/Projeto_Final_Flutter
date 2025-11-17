@@ -15,6 +15,7 @@ class _StateLoginPage extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _authService = AuthService();
   bool _isLoading = false;
   String? _error;
 
@@ -26,7 +27,7 @@ class _StateLoginPage extends State<LoginPage> {
     });
 
     try {
-      final token = await AuthService.login(
+      final token = await _authService.login(
         _emailController.text,
         _passwordController.text,
       );
@@ -34,7 +35,7 @@ class _StateLoginPage extends State<LoginPage> {
       AuthService.isLogged.value = true;
       if (!mounted) return;
       final city = await LocalStorage.getCity();
-      context.go('/home', extra: {'city': city});
+      context.push('/home', extra: {'city': city});
     } catch (e) {
       setState(() => _error = e.toString());
     } finally {
@@ -81,7 +82,7 @@ class _StateLoginPage extends State<LoginPage> {
                     : const Text("Entrar"),
               ),
               TextButton(
-                onPressed: () => context.go('/register'),
+                onPressed: () => context.push('/register'),
                 child: Text('Ainda não tem conta? Cadastre-se'),
               ),
             ],
