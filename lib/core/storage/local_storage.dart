@@ -35,9 +35,13 @@ class LocalStorage {
   }
 
   static Future<Map<String, dynamic>?> getCandidate() async {
-  final prefs = await SharedPreferences.getInstance();
-  final jsonString = prefs.getString('candidate');
-  if (jsonString == null) return null;
-  return jsonDecode(jsonString);
-}
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString('candidate');
+    if (jsonString == null) return null;
+    return jsonDecode(jsonString);
+  }
+  static Future<void> clearCandidate() async{
+    final preference = await SharedPreferences.getInstance();
+    await preference.remove('candidate');
+  }
 }

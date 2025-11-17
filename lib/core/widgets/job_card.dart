@@ -10,13 +10,12 @@ class JobCard extends StatelessWidget {
     final String title = job['title'] ?? 'Vaga sem título';
     final String company = job['company']?['name'] ?? 'Empresa não informada';
     final String city = job['city'] ?? 'Cidade não informada';
-    final List<String> dates = job['dates'] ?? 'Datas não informadas';
+    final List<String> dates = job['dates'] ?? ['Datas não informadas'];
     final String salary =
         job['salary'] != null && job['salary'].toString().isNotEmpty
         ? 'R\$ ${job['salary']}'
         : 'A combinar';
-    final String logoUrl = job['company']?['logo'];
-    print(logoUrl);
+    final String? logoUrl = job['company']?['logo'];
 
     return Card(
       color: Colors.grey.shade200,
@@ -30,7 +29,13 @@ class JobCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            CircleAvatar(radius: 40, backgroundImage: NetworkImage(logoUrl)),
+            CircleAvatar(
+              radius: 40,
+              backgroundImage: logoUrl != null && logoUrl.isNotEmpty
+                  ? NetworkImage(logoUrl)
+                  : const AssetImage('images/default_logo.png')
+                        as ImageProvider,
+            ),
             Text(
               company,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),

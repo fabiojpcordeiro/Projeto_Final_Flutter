@@ -76,6 +76,14 @@ class ProfileService {
     required int state,
     required int city,
   }) async {
+    //Birth date conversion
+    String? isoBirthdate;
+    if (birthdate != null && birthdate.contains('/')) {
+      final parts = birthdate.split('/');
+      if (parts.length == 3) {
+        isoBirthdate = "${parts[2]}-${parts[1]}-${parts[0]}";
+      }
+    }
     final url = Uri.parse('$baseUrl/candidate/$candidateId');
     final response = await http.put(
       url,
@@ -87,14 +95,13 @@ class ProfileService {
         'state_id': state,
         'city_id': city,
         'bio': bio,
-        'birthdate': birthdate,
+        'birthdate': isoBirthdate,
         'state': state,
         'city': city,
       }),
     );
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
-      print(body);
     }
     if (response.statusCode != 200) {
       throw Exception(

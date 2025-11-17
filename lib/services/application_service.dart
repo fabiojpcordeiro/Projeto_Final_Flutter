@@ -41,4 +41,17 @@ class ApplicationService {
     }
     throw 'Ocorreu um erro ao carregar candidaturas';
   }
+
+  Future<void> deleteApplication(int id) async {
+    final url = Uri.parse('$baseUrl/application/$id');
+    final response = await http.delete(
+      url,
+      headers: await apiClient.getHeaders(),
+    );
+    if (response.statusCode != 200) {
+      final body = jsonDecode(response.body);
+      final errors = body['errors'];
+      throw errors;
+    }
+  }
 }

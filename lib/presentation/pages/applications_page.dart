@@ -65,7 +65,15 @@ class _ApplicationPageState extends State<ApplicationsPage> {
       padding: const EdgeInsets.all(16),
       itemCount: applications.length,
       itemBuilder: (context, index) {
-        return ApplicationCard(application: applications[index]);
+        return ApplicationCard(
+          onDeleted: (id) {
+            print(id);
+            setState(() {
+              applications.removeWhere((item) => item['id'] == id);
+            });
+          },
+          application: applications[index],
+        );
       },
     );
   }
